@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>6to2 | Rest on the go</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:   #0A0A0A;
+      --dark:    #141414;
+      --panel:   #1A1A1A;
+      --border:  #2A2A2A;
+      --muted:   #8A8580;
+      --off-white: #F0EDE8;
+      --accent:  #C8B89A;
+      --text:    #D8D4CE;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      font-size: 16px;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5rem 2.5rem;
+      background: transparent;
+      transition: background 0.4s;
+    }
+    nav.scrolled { background: rgba(10,10,10,0.92); backdrop-filter: blur(12px); }
+
+    .nav-logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.25rem;
+      color: var(--off-white);
+      letter-spacing: 0.04em;
+      text-decoration: none;
+    }
+
+    .nav-link {
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-link:hover { color: var(--off-white); }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8rem 2rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Ambient breathing orb */
+    .orb {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 520px; height: 520px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(200,184,154,0.07) 0%, transparent 70%);
+      animation: breathe 6s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes breathe {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+      50%       { transform: translate(-50%, -50%) scale(1.18); opacity: 1; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .orb { animation: none; }
+    }
+
+    .hero-eyebrow {
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 2rem;
+      position: relative;
+    }
+
+    .hero-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(3.5rem, 10vw, 7.5rem);
+      line-height: 1;
+      color: var(--off-white);
+      letter-spacing: -0.02em;
+      position: relative;
+    }
+
+    .hero-title em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .hero-sub {
+      margin-top: 2rem;
+      font-size: clamp(0.95rem, 2vw, 1.1rem);
+      color: var(--muted);
+      max-width: 440px;
+      position: relative;
+    }
+
+    .hero-cta {
+      margin-top: 3rem;
+      position: relative;
+    }
+
+    .btn-primary {
+      display: inline-block;
+      padding: 0.9rem 2.4rem;
+      background: var(--accent);
+      color: var(--black);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-primary:hover { background: var(--off-white); transform: translateY(-1px); }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--muted);
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .scroll-line {
+      width: 1px; height: 48px;
+      background: var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .scroll-line::after {
+      content: '';
+      position: absolute;
+      top: -100%; left: 0;
+      width: 100%; height: 100%;
+      background: var(--accent);
+      animation: scrolldown 2s ease-in-out infinite;
+    }
+    @keyframes scrolldown {
+      0%   { top: -100%; }
+      100% { top: 100%; }
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── PROBLEM SECTION ── */
+    #problem {
+      padding: 7rem 2rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 2.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .problem-text {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      line-height: 1.35;
+      color: var(--off-white);
+      margin-bottom: 2rem;
+    }
+
+    .problem-body {
+      font-size: 1rem;
+      color: var(--muted);
+      max-width: 560px;
+      line-height: 1.8;
+    }
+
+    /* ── TICKER / MARQUEE ── */
+    .marquee-wrap {
+      overflow: hidden;
+      padding: 1.5rem 0;
+      background: var(--dark);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .marquee-track {
+      display: flex;
+      width: max-content;
+      animation: marquee 22s linear infinite;
+    }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    .marquee-item {
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      white-space: nowrap;
+      padding: 0 2.5rem;
+    }
+    .marquee-item span {
+      color: var(--accent);
+      margin: 0 0.5rem;
+    }
+
+    /* ── TEASE SECTION ── */
+    #tease {
+      padding: 7rem 2rem;
+      max-width: 900px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+
+    @media (max-width: 680px) {
+      #tease { grid-template-columns: 1fr; gap: 3rem; }
+    }
+
+    .tease-visual {
+      aspect-ratio: 3/4;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Blurred hoodie silhouette shape */
+    .tease-silhouette {
+      width: 70%;
+      height: 70%;
+      background: radial-gradient(ellipse at 50% 40%, rgba(200,184,154,0.12) 0%, transparent 65%);
+      border-radius: 30% 30% 40% 40%;
+      position: relative;
+      filter: blur(2px);
+    }
+
+    .tease-label {
+      position: absolute;
+      bottom: 1.25rem;
+      left: 1.25rem;
+      font-size: 0.68rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* Reveal on hover */
+    .tease-visual::after {
+      content: 'COMING SOON';
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent);
+      opacity: 0;
+      transition: opacity 0.3s;
+      background: rgba(10,10,10,0.5);
+    }
+    .tease-visual:hover::after { opacity: 1; }
+
+    .tease-copy { }
+
+    .tease-headline {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+      color: var(--off-white);
+      line-height: 1.3;
+      margin-bottom: 1.5rem;
+    }
+
+    .tease-body {
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.8;
+      margin-bottom: 2rem;
+    }
+
+    /* Three dots feature list */
+    .feature-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .feature-list li {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.85rem;
+      color: var(--text);
+      letter-spacing: 0.03em;
+    }
+
+    .feature-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    /* ── STATS BAR ── */
+    #stats {
+      padding: 4rem 2rem;
+      background: var(--dark);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stats-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      .stats-inner { grid-template-columns: 1fr; }
+    }
+
+    .stat-num {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2.2rem, 5vw, 3.5rem);
+      color: var(--off-white);
+      line-height: 1;
+      margin-bottom: 0.4rem;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* ── WAITLIST SECTION ── */
+    #waitlist {
+      padding: 8rem 2rem;
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .waitlist-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      color: var(--off-white);
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .waitlist-sub {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .waitlist-form {
+      display: flex;
+      gap: 0;
+      max-width: 440px;
+      margin: 0 auto;
+    }
+
+    .waitlist-input {
+      flex: 1;
+      padding: 0.9rem 1.2rem;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-right: none;
+      color: var(--off-white);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.88rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .waitlist-input::placeholder { color: var(--muted); }
+    .waitlist-input:focus { border-color: var(--accent); }
+
+    .waitlist-btn {
+      padding: 0.9rem 1.6rem;
+      background: var(--accent);
+      border: 1px solid var(--accent);
+      color: var(--black);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+    .waitlist-btn:hover { background: var(--off-white); border-color: var(--off-white); }
+
+    .waitlist-note {
+      margin-top: 1rem;
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    .success-msg {
+      display: none;
+      color: var(--accent);
+      font-size: 0.88rem;
+      margin-top: 1rem;
+      letter-spacing: 0.05em;
+    }
+
+    @media (max-width: 480px) {
+      .waitlist-form { flex-direction: column; }
+      .waitlist-input { border-right: 1px solid var(--border); border-bottom: none; }
+      .waitlist-input:focus { border-color: var(--accent); }
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 2.5rem 2.5rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1rem;
+      color: var(--muted);
+    }
+
+    .footer-copy {
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+    }
+
+    /* ── CURSOR DOT ── */
+    .cursor {
+      position: fixed;
+      width: 8px; height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.08s, width 0.2s, height 0.2s, opacity 0.2s;
+      mix-blend-mode: difference;
+    }
+    .cursor.expanded { width: 36px; height: 36px; opacity: 0.4; }
+
+    @media (hover: none) { .cursor { display: none; } }
+
+    /* ── FADE IN on scroll ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Custom cursor -->
+  <div class="cursor" id="cursor"></div>
+
+  <!-- Nav -->
+  <nav id="nav">
+    <a href="#" class="nav-logo">6to2</a>
+    <a href="#waitlist" class="nav-link">Join the waitlist</a>
+  </nav>
+
+  <!-- Hero -->
+  <section id="hero">
+    <div class="orb"></div>
+    <p class="hero-eyebrow">Something is coming</p>
+    <h1 class="hero-title">Rest<br><em>on the go.</em></h1>
+    <p class="hero-sub">You work the hours nobody else will. You deserve to rest on the way home.</p>
+    <div class="hero-cta">
+      <a href="#waitlist" class="btn-primary">Join the waitlist</a>
+    </div>
+    <div class="hero-scroll">
+      <div class="scroll-line"></div>
+      <span>scroll</span>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- Problem -->
+  <section id="problem">
+    <div class="section-label reveal">The problem</div>
+    <h2 class="problem-text reveal">4am starts.<br>6pm finishes.<br>All you want is to sleep on the way home.</h2>
+    <p class="problem-body reveal">Hard windows. Constant vibration. Every bump rattling through your skull. You close your eyes and wake up more exhausted than before. There has never been a real solution. Until now.</p>
+  </section>
+
+  <!-- Marquee -->
+  <div class="marquee-wrap">
+    <div class="marquee-track">
+      <span class="marquee-item">For the early shift <span>·</span></span>
+      <span class="marquee-item">For the late commute <span>·</span></span>
+      <span class="marquee-item">For every window you've leaned against <span>·</span></span>
+      <span class="marquee-item">Rest on the go <span>·</span></span>
+      <span class="marquee-item">6to2 <span>·</span></span>
+      <span class="marquee-item">Coming soon <span>·</span></span>
+      <span class="marquee-item">For the early shift <span>·</span></span>
+      <span class="marquee-item">For the late commute <span>·</span></span>
+      <span class="marquee-item">For every window you've leaned against <span>·</span></span>
+      <span class="marquee-item">Rest on the go <span>·</span></span>
+      <span class="marquee-item">6to2 <span>·</span></span>
+      <span class="marquee-item">Coming soon <span>·</span></span>
+    </div>
+  </div>
+
+  <!-- Tease -->
+  <section id="tease">
+    <div class="tease-visual reveal">
+      <div class="tease-silhouette"></div>
+      <span class="tease-label">Prototype / 2026</span>
+    </div>
+    <div class="tease-copy">
+      <div class="section-label reveal">What we're building</div>
+      <h3 class="tease-headline reveal">Built into your hoodie.<br>Hidden from the world.</h3>
+      <p class="tease-body reveal">We're not going to reveal everything yet. But we're building something that's been worn on real buses, at real hours, by someone who knows what it's like to need sleep and get nothing.</p>
+      <ul class="feature-list reveal">
+        <li><span class="feature-dot"></span>Absorbs vibration before it reaches your head</li>
+        <li><span class="feature-dot"></span>Moulds to you. Disappears into the hoodie.</li>
+        <li><span class="feature-dot"></span>Removable. Washable. Wearable every day.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section id="stats">
+    <div class="stats-inner">
+      <div class="reveal">
+        <div class="stat-num">4am</div>
+        <div class="stat-label">When it starts</div>
+      </div>
+      <div class="reveal">
+        <div class="stat-num">0</div>
+        <div class="stat-label">Existing solutions that work</div>
+      </div>
+      <div class="reveal">
+        <div class="stat-num">1</div>
+        <div class="stat-label">Hoodie that changes that</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Waitlist -->
+  <section id="waitlist">
+    <h2 class="waitlist-title reveal">Be the first<br><em style="font-style:italic; color:var(--accent)">to rest.</em></h2>
+    <p class="waitlist-sub reveal">Join the waitlist. We'll reach out when 6to2 is ready. No spam, just one email when it matters.</p>
+    <form class="waitlist-form reveal" id="waitlistForm" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+      <input class="waitlist-input" type="email" name="email" placeholder="your@email.com" required id="emailInput" />
+      <button class="waitlist-btn" type="submit">Notify me</button>
+    </form>
+    <p class="waitlist-note reveal">No spam. One email when we launch.</p>
+    <p class="success-msg" id="successMsg">You're on the list. We'll be in touch. ✦</p>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <span class="footer-logo">6to2</span>
+    <span class="footer-copy">© 2026 6to2wear. All rights reserved.</span>
+  </footer>
+
+  <script>
+    // Custom cursor
+    const cursor = document.getElementById('cursor');
+    document.addEventListener('mousemove', e => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top  = e.clientY + 'px';
+    });
+    document.querySelectorAll('a, button, input').forEach(el => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('expanded'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('expanded'));
+    });
+
+    // Nav scroll
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // Scroll reveal
+    const revealEls = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    revealEls.forEach(el => observer.observe(el));
+
+    // Waitlist form via Formspree
+    const form = document.getElementById('waitlistForm');
+    const successMsg = document.getElementById('successMsg');
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const btn = form.querySelector('.waitlist-btn');
+      btn.textContent = 'Sending...';
+      btn.disabled = true;
+      try {
+        const res = await fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { 'Accept': 'application/json' }
+        });
+        if (res.ok) {
+          form.style.display = 'none';
+          document.querySelector('.waitlist-note').style.display = 'none';
+          successMsg.style.display = 'block';
+        } else {
+          btn.textContent = 'Try again';
+          btn.disabled = false;
+        }
+      } catch {
+        btn.textContent = 'Try again';
+        btn.disabled = false;
+      }
+    });
+  </script>
+
+</body>
+</html>
